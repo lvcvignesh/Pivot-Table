@@ -1,0 +1,36 @@
+{% extends "navbar.html" %}
+{%- block table -%}
+    <table id="table" class="table table-hover table-bordered" border="1" style="width:100%">
+      <tr>
+        <th>Company Name</th>
+        <th>Day Open</th>
+        <th>Month Open</th>
+        <th>Quarter Open</th>
+        <th>Half Year Open</th>
+        <th>Year Open</th>
+        <th>5 Year Open</th>
+        <th>10 Year Open</th>
+      </tr>
+    {% set period = ['Today','Monthly','Quarter','HalfYear','Year','FiveYear','TenYear'] %}
+    {% set count = 0 %}
+    {% set l = stocks|length %}
+    {% for key, value in stocks.iteritems()|sort %}
+      <tr>
+        <td> {{ value.name }} </th>
+        {% set placement= 'right' %}
+        {% if count > 0.75*l and l>30 %}
+            {% set placement= 'top' %}
+        {% endif %}
+        {% set colcount = 0 %}
+        {% for per in period %}
+        {% if colcount > 3 and placement != 'top' %}
+        {% set placement ='left' %}
+        {% endif %}
+        <td class="{{value.pivot_prev.get_all_colour()[per]}}" data-container="html" data-html="true" data-trigger="hover" title="Details" data-content="{% with per=per %}{% include 'popover.html' %}{% endwith %}" data-placement="{{placement}}" align="left"> {{ value.get_period_open(per) }} </td>
+        {% set colcount = colcount + 1 %}
+        {% endfor %}
+      </tr>
+    {% set count = count + 1 %}
+    {% endfor %}
+    </table>
+{% endblock %}

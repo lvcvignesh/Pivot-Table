@@ -1,0 +1,79 @@
+{% extends "index.html" %}
+{%- block body -%}
+<nav class="navbar navbar-fixed-top navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">StockPicker</a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/update"><span class="glyphicon glyphicon-refresh"></span> Update</a></li>
+      <li class="dropdown" id="Index"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Index<span class="caret"></span></a>
+        <ul class="dropdown-menu list-group">
+          {% for name , ind in indexes.iteritems()|sort %}
+          {% if ind == index %}
+          <li class="active list-group-item"><a href="/{{ind}}">{{name}}</a></li>
+          {% else %}
+          <li class="list-group-item"><a href="/{{ind}}">{{name}}</a></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="dropdown" id="FaceValue" ><a class="dropdown-toggle" data-toggle="dropdown" href="#">Face Value<span class="caret"></span></a>
+        <ul class="dropdown-menu list-group">
+          {% if param['Facevalue'] == 'all' %}
+          <li class = "active list-group-item">
+          {% else %}
+          <li class="list-group-item">
+          {% endif %}
+          {% if param['Sector'] == 'all' %}
+          <a href="/{{index}}">All</a>
+          {% else %}
+          <a href="/{{index}}?sector={{param['Sector']}}">All</li>
+          {% endif %}
+          </li>
+          {% for value in FaceValue|sort %}
+          {% if param['Facevalue'] == value %}
+          <li class = "active list-group-item">
+          {% else %}
+          <li class="list-group-item">
+          {% endif %}
+          {% if param['Sector'] == 'all' %}
+          <a href="/{{index}}?facevalue={{value}}">{{value}}</a></li>
+          {% else %}
+          <a href="/{{index}}?sector={{param['Sector']}}&&facevalue={{value}}">{{value}}</a>
+          {% endif %}
+        </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="dropdown" id="Sector"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sector<span class="caret"></span></a>
+        <ul class="dropdown-menu list-group">
+          {% if param['Sector'] == 'all' %}
+          <li class = "active">
+          {% else %}
+          <li class="">
+          {% endif %}
+          {% if param['Facevalue'] == 'all' %}
+          <a href="/{{index}}">ALL</a>
+          {% else %}
+          <a href="/{{index}}?facevalue={{param['Facevalue']}}">All</a>
+          {% endif %}
+          {% for sector in sectors|sort %} 
+          {% if param['Sector'] == sector %}
+          <li class = "active">
+          {% else %}
+          <li class="">
+          {% endif %}
+          {% if param['Facevalue'] == 'all' %}
+          <a href="/{{index}}?sector={{sector}}">{{sector}}</a>
+          {% else %}
+          <a href="/{{index}}?sector={{sector}}&&facevalue={{param['Facevalue']}}">{{sector}}</a>
+          {% endif %}
+        </li>
+          {% endfor %}
+      </li>
+    </ul>
+  </div>
+</nav>  
+{% block table %}{% endblock %}
+{% endblock %} 

@@ -1,0 +1,23 @@
+<html>
+	<head>
+	</head>
+	<body>
+		<table class='table'>
+				{% set pivot_dict = value.pivot_prev.get_pivot(per) %}
+				{% set count = 1 %}
+				{% for q, v in pivot_dict.iteritems()|sort %}
+				{% if q[0]=='S' %}
+				<tr>
+					<th> R{{count}} : {{pivot_dict['R'+count|string]}}</th>
+					<th>{{q}} : {{v}}</th>
+					{% set count = count + 1 %} 
+				</tr>
+				{% elif q[0]<'R' %}
+				<tr>
+					<th colspan='2'>{{q}} : {{v}}</th> 			
+				<tr>
+				{% endif %}
+				{% endfor %}	
+		</table>
+	</body>
+<html>

@@ -1,0 +1,30 @@
+.navbar{
+	margin-bottom: 0;
+}
+body { 
+	padding-top: 50px; 
+}
+.Pivot{
+	background-color: #ccffcc;
+}
+.R1{
+	background-color:#4dff4d;
+}
+.R2{
+	background-color:#00b300;
+}
+.R3{
+	background-color:#006600;
+}
+.S1{
+	background-color:#ffcccc;
+}
+.S2{
+	background-color:#ff8080;
+}
+.S3{
+	background-color:#ff1a1a;
+}
+.S4{
+	background-color:#b30000;
+}
