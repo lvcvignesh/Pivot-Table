@@ -29,6 +29,12 @@ def nifty50():
     if MIS_SECTOR.get(sector,None) is not None:
       param['Sector']= MIS_SECTOR.get(sector,"all")    
     data = stock.start_func('ind_niftylist.csv',param)
+    """data['INFY'].get_multiple_quarters()
+    data['INFY'].get_multiple_half_years()
+    data['INFY'].get_multiple_years()
+    data['INFY'].get_multiple_five_years()
+    data['INFY'].get_multiple_ten_years()
+    """
     sectors = stock.get_index_sectors()   
     return render_template("table.html",
                            index ='CNX50',

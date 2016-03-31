@@ -16,7 +16,12 @@ class Pivot:
 		self.year_hlc = stock_data.get_year_hlc(mode,self.dict)
 		self.five_year_hlc = stock_data.get_5year_hlc(mode,self.dict)
 		self.ten_year_hlc = stock_data.get_10year_hlc(mode,self.dict)
-
+		"""self.multiple_quarters_hlc = stock_data.get_multiple_quarters(self.dict)
+		self.multiple_half_years_hlc = stock_data.get_multiple_half_years(self.dict)
+		self.multiple_years_hlc = stock_data.get_multiple_years(self.dict)
+		self.multiple_five_years_hlc = stock_data.get_multiple_five_years(self.dict)
+		self.multiple_ten_years_hlc = stock_data.get_multiple_ten_years(self.dict)
+		"""
 		self.day_pivot = PivotData(stock_data.get_today_hlc()).calc_pivot()
 		self.month_pivot = PivotData(self.month_hlc).calc_pivot()
 		self.quarter_pivot = PivotData(self.quarter_hlc).calc_pivot()
@@ -24,6 +29,17 @@ class Pivot:
 		self.year_pivot = PivotData(self.year_hlc).calc_pivot()
 		self.five_year_pivot = PivotData(self.five_year_hlc).calc_pivot()
 		self.ten_year_pivot = PivotData(self.ten_year_hlc).calc_pivot()
+		"""self.multiple_quarters = []
+		self.multiple_half_years = []
+		self.multiple_years = []
+		self.multiple_five_years = []
+		self.multiple_ten_years = []
+		self.get_multiple_quarter_hlc()
+		self.get_multiple_half_year_hlc()
+		self.get_multiple_year_hlc()
+		self.get_multiple_five_year_hlc()
+		self.get_multiple_ten_year_hlc()
+		"""
 		if self.dict is None:
 			self.stock_data.save_hlc(self)
 
@@ -46,6 +62,51 @@ class Pivot:
 	def get_half_year_pivot(self):
 		return self.half_year_pivot
 
+	def get_multiple_quarter_hlc(self):
+		for hlc in self.stock_data.get_multiple_quarters(self.dict):
+			pivot_val = PivotData(hlc).calc_pivot()
+			self.multiple_quarters.append(pivot_val)
+		self.quarter_pivot['Pivot 2'] = self.multiple_quarters[1]["Pivot"]
+		self.quarter_pivot['Pivot 3'] = self.multiple_quarters[2]["Pivot"]
+	
+	def get_multiple_half_year_hlc(self):
+		for hlc in self.stock_data.get_multiple_half_years(self.dict):
+			pivot_val = PivotData(hlc).calc_pivot()
+			self.multiple_half_years.append(pivot_val)
+		self.half_year_pivot['Pivot 2'] = self.multiple_half_years[1]["Pivot"]
+		self.half_year_pivot['Pivot 3'] = self.multiple_half_years[2]["Pivot"]
+	
+	def get_multiple_year_hlc(self):
+		for hlc in self.stock_data.get_multiple_years(self.dict):
+			pivot_val = PivotData(hlc).calc_pivot()
+			self.multiple_years.append(pivot_val)
+		self.year_pivot['Pivot 2'] = self.multiple_years[1]["Pivot"]
+		self.year_pivot['Pivot 3'] = self.multiple_years[2]["Pivot"]
+		
+	def get_multiple_five_year_hlc(self):
+		for hlc in self.stock_data.get_multiple_five_years(self.dict):
+			pivot_val = PivotData(hlc).calc_pivot()
+			self.multiple_five_years.append(pivot_val)
+		self.five_year_pivot['Pivot 2'] = self.multiple_five_years[1]["Pivot"]
+		self.five_year_pivot['Pivot 3'] = self.multiple_five_years[2]["Pivot"]
+	
+	def get_multiple_ten_year_hlc(self):
+		for hlc in self.stock_data.get_multiple_ten_years(self.dict):
+			pivot_val = PivotData(hlc).calc_pivot()
+			self.multiple_ten_years.append(pivot_val)
+		self.ten_year_pivot['Pivot 2'] = self.multiple_ten_years[1]["Pivot"]
+		self.ten_year_pivot['Pivot 3'] = self.multiple_ten_years[2]["Pivot"]
+	
+	"""def get_multiple_year_hlc(self):
+	
+	def get_multiple_half_year_hlc(self):
+	
+	def get_multiple_year_hlc(self):
+	
+	def get_multiple_five_year_hlc(self):
+	
+	def get_multiple_ten_year_hlc(self):
+	"""
 	def get_year_pivot(self):
 		return self.year_pivot
 
@@ -84,9 +145,7 @@ class Pivot:
 	
 	def calc_colour(self,pivot_dict):
 		arr = ['R3','R2','R1','Pivot','S1','S2','S3']
-		print 'hahahaha'
 		for i in arr:
-			print i, pivot_dict.get(i)
 			if self.open > pivot_dict.get(i):
 				break
 		if i is 'S3' and self.open < pivot_dict.get(i):
@@ -100,6 +159,7 @@ class PivotData:
 		self.high = hlc.get('High')
 		self.low = hlc.get('Low')
 		self.close = hlc.get('Close')
+		print self.high,self.low,self.close
 	
 	def calc_pivot(self):
 		p = (self.high + self.close + self.low)/3.0

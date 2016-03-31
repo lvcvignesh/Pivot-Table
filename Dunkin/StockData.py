@@ -1,5 +1,5 @@
 from nsetools import Nse
-import pprint as pprint
+from pprint import pprint
 import urllib2
 import os
 from FileHandler import StockFile
@@ -79,28 +79,30 @@ class StockData:
 		quarter = ((self.date.month-1) / 3)+1
 		return quarter  
 	
-	def prev_quarter_month_diff(self):
+	def prev_quarter_month_diff(self,extra_months = 0):
 		quarter = self.get_quarter_number()
 		month_diff =self.date.month - (3*(quarter-1))
+		month_diff = month_diff + extra_months
 		return month_diff
 
 	def print_pivot(self):
 		return {"Pivot Diff":self.pivot_diff.year_pivot,
 				"Pivot Prev":self.pivot_prev.year_pivot
 				}
+
 	def get_half_year_number(self):
 		half_year = ((self.date.month-1) / 6)+1
 		
 		return half_year
 	
-	def prev_half_year_month_diff(self):
+	def prev_half_year_month_diff(self, extra_months = 0):
 		half_year = self.get_half_year_number()
 		month_diff =self.date.month - (6*(half_year-1))
-		return month_diff
+		return month_diff + extra_months
 
-	def prev_year_month_diff(self,number_of_years):
+	def prev_year_month_diff(self,number_of_years, extra_months = 0):
 		month_diff = self.date.month
-		return month_diff
+		return month_diff + extra_months
 
 	def get_today_hlc(self):
 		high = self.get_day_high()
@@ -120,50 +122,54 @@ class StockData:
 		data = self.file.read_from_file('Monthly',2,3)
 		return self.get_hlc(data)
 
-	def get_quarter_hlc(self,mode,filedata):
+	def get_quarter_hlc(self,mode,filedata,number = 0):
 		"""Read from file fetches the month Diff,
 		eg :April 4th month and is in 2nd quarter so 1st month in 2nd quarter
 		it returns 1 +2 is done for indexing, 3 is for quarter"""
 		if filedata is not None:
 			return filedata.get('Quarter')		
 		if mode is MODE1:
-			diff =self.prev_quarter_month_diff()
-			data = self.file.read_from_file('Monthly',diff+1,diff+1+3)
+			diff =self.prev_quarter_month_diff(number)
+			diff = diff+1
+			data = self.file.read_from_file('Monthly',diff,diff+3)
 		else : 
 			data = self.get_date_diff_quarter()
 		return self.get_hlc(data)
 
-	def get_half_year_hlc(self,mode,filedata):
+	def get_half_year_hlc(self, mode, filedata, number=0):
 		if filedata is not None:
 			return filedata.get('Half Year')		
 		if mode is MODE1:
-			diff = self.prev_half_year_month_diff()
-			data = self.file.read_from_file('Monthly',diff+1,diff+1+6)
+			diff = self.prev_half_year_month_diff(number)
+			diff = diff+1
+			data = self.file.read_from_file('Monthly', diff, diff+6)
 		else :
 			data = self.get_date_diff_half_year()
 		return self.get_hlc(data)
 	
-	def get_year_hlc(self,mode,filedata):
+	def get_year_hlc(self, mode, filedata, number = 0):
 		if filedata is not None:
 			return filedata.get('Year')		
 		if mode is MODE1:
-			diff = self.prev_year_month_diff(1)
-			data = self.file.read_from_file('Monthly',diff+1,diff+1+12)
+			diff = self.prev_year_month_diff(1, number)
+			diff = diff + 1 
+			data = self.file.read_from_file('Monthly',diff,diff+12)
 		else :
 			data = self.get_date_diff_year()
 		return self.get_hlc(data)
 	
-	def get_5year_hlc(self,mode,filedata):
+	def get_5year_hlc(self, mode,filedata , number = 0):
 		if filedata is not None:
 			return filedata.get('5 Years')		
-		diff = self.prev_year_month_diff(5)	
+		diff = self.prev_year_month_diff(5, number)	
 		if mode is MODE1:
-			data = self.file.read_from_file('Monthly',diff+1,diff+1+12*5)
+			diff = diff + 1
+			data = self.file.read_from_file('Monthly', diff, diff+12*5)
 		else :
 			data = self.get_date_diff_5year()
 		return self.get_hlc(data)
 
-	def get_10year_hlc(self,mode,filedata):
+	def get_10year_hlc(self,mode,filedata, number = 0):
 		if filedata is not None:
 			return filedata.get('10 Years')		
 		diff = self.prev_year_month_diff(10)	
@@ -189,6 +195,78 @@ class StockData:
 			return self.get_10year_hlc(mode,self.pivot_prev.dict)['Open']
 		elif period is 'Today':
 			return self.get_today_hlc()['Open']
+
+	def get_multiple_quarters(self, filedata = None):
+		quarter_diff = [0,3,6]
+		quarter_list = []
+		if filedata is not None:
+			mylist =['Quarter', 'Quarter 1', 'Quarter 2']
+			for months in mylist:
+				print filedata.get(months) ,'multiple_quarters'
+				quarter_list.append(filedata.get(months))
+			if len(quarter_list) == 3:
+				return quarter_list 
+		for months in quarter_diff:
+			quarter_list.append(self.get_quarter_hlc(MODE1,None,months))
+		return quarter_list	
+
+	def get_multiple_half_years(self, filedata = None):
+		half_year_diff = [0,6,12]
+		half_year_list =[]
+		if filedata is not None:
+			mylist =['Half Year', 'Half Year 1', 'Half Year 2']
+			for months in mylist:
+				half_year_list.append(filedata.get(months))
+			if len(half_year_list) == 3:
+				return half_year_list 
+		
+		for months in half_year_diff:
+			half_year_list.append(self.get_half_year_hlc(MODE1,None,months))
+		return half_year_list
+
+	def get_multiple_years(self, filedata = None):
+		year_diff = [0,12,24]
+		year_list =[]
+		if filedata is not None:
+			mylist =['Year', 'Year 1', 'Year 2']
+			for months in mylist:
+				year_list.append(filedata.get(months))
+			if len(year_list) == 3:
+				return year_list 
+		
+		for months in year_diff:
+			year_list.append(self.get_year_hlc(MODE1,None,months))
+		return year_list
+
+	def get_multiple_five_years(self, filedata = None):
+		year_diff = [0,60,120]
+		five_year_list = []
+		if filedata is not None:
+			mylist =['5 Years', '5 Years 1', '5 Years 2']
+			for months in mylist:
+				five_year_list.append(filedata.get(months))
+			
+			if len(five_year_list) == 3:
+				return five_year_list 
+		
+		for months in year_diff:
+			five_year_list.append(self.get_5year_hlc(MODE1,None,months))
+		return five_year_list
+
+	def get_multiple_ten_years(self, filedata = None):
+		year_diff = [0,120,240]
+		ten_year_list = []
+
+		if filedata is not None:
+			mylist =['10 Years', '10 Years 1', '10 Years 2']
+			for months in mylist:
+				ten_year_list.append(filedata.get(months))
+			if len(ten_year_list) == 3:
+				return ten_year_list 
+		
+		for months in year_diff:
+			ten_year_list.append(self.get_10year_hlc(MODE1,None,months))
+		return ten_year_list
 
 	def get_date_diff_quarter(self):
 		return self.file.read_from_file('Monthly',3)
@@ -303,10 +381,21 @@ class StockData:
 		data = {
 				"Month" : pivot.month_hlc,
 				"Quarter" : pivot.quarter_hlc,
+				"Quarter 1":pivot.multiple_quarters_hlc[1],
+				"Quarter 2":pivot.multiple_quarters_hlc[2],
 				"Half Year": pivot.half_year_hlc,
+				"Half Year 1":pivot.multiple_half_years_hlc[1],
+				"Half Year 2":pivot.multiple_half_years_hlc[2],
 				"Year" : pivot.year_hlc,
+				"Year 1":pivot.multiple_years_hlc[1],
+				"Year 2":pivot.multiple_years_hlc[2],
 				"5 Years" : pivot.five_year_hlc,
+				"5 Years 1":pivot.multiple_five_years_hlc[1],
+				"5 Years 2":pivot.multiple_five_years_hlc[2],
 				"10 Years" : pivot.ten_year_hlc,
+				"10 Years 1":pivot.multiple_ten_years_hlc[1],
+				"10 Years 2":pivot.multiple_ten_years_hlc[2],
+				
 				}
 
 		self.file.write_hlc(data,'w')

@@ -7,6 +7,7 @@ from nsetools import Nse
 import os
 import os.path
 import json
+import shutil
 import pprint as pprint
 from itertools import islice
 from datetime import date
@@ -157,6 +158,7 @@ class UpdateData:
 			if self.date.month - month_update.month > 0:
 				if self.check_month_change(month_update.month):
 					self.update_monthly()
+					shutil.rmtree(BASE_PATH+SEPERATOR+self.index+SEPERATOR+'HLC')
 			  		flagmonth =True
 			if flagday:
 				self.write_update('day')
