@@ -31,7 +31,7 @@ class main:
 
 	def __init__(self):
 		self.sectors = {}
-	
+		self.stocklist = {}
 	def start_func(self, index, param = None):
 		data = UpdateData(index)
 		count = 0
@@ -46,25 +46,35 @@ class main:
 					try:
 						#data.update_hlc(line[2])
 						stock = StockData(line[2],data,line[1])
-						#stocklist[stock.stock] = stock
 						if self.sectors.get(line[1]) is None:
 							self.sectors[line[1]]=line[1]
-						if facevalue is not all_String and sector is not all_String:
-							if (stock.get_face_value() == float(facevalue)) and (stock.sector == sector):
-								stocklist[stock.stock] = stock 
-						elif facevalue is not all_String:
-							if stock.get_face_value() == float(facevalue) :
-								stocklist[stock.stock] = stock
-						elif sector is not all_String:
-							if stock.sector == sector:
-								stocklist[stock.stock] = stock
-						else: 
-							stocklist[stock.stock] = stock
+						#stocklist[stock.stock] = stock
+						self.stocklist[stock.stock] = stock
+	
 					except:
 						print line[2]
 						continue
 					
 				else : count = 1
+		return self.stocklist
+
+	def get_stock_list(self, param = None):
+		stocklist = {}
+		if param is not None:
+			facevalue = param.get('Facevalue')
+			sector = param.get('Sector')
+		for key,stock in self.stocklist.iteritems():
+			if facevalue is not all_String and sector is not all_String:
+				if (stock.get_face_value() == float(facevalue)) and (stock.sector == sector):
+					stocklist[stock.stock] = stock 
+			elif facevalue is not all_String:
+				if stock.get_face_value() == float(facevalue) :
+					stocklist[stock.stock] = stock
+			elif sector is not all_String:
+				if stock.sector == sector:
+					stocklist[stock.stock] = stock
+			else: 
+				return self.stocklist
 		return stocklist
 
 	def get_index_sectors(self):

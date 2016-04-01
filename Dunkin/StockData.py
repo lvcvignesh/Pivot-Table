@@ -108,7 +108,6 @@ class StockData:
 		high = self.get_day_high()
 		low = self.get_day_low()
 		open_price = self.get_open()
-		print open_price
 		close = self.get_close_price()
 		if close is None:
 			close = self.get_previous_close()
@@ -116,10 +115,11 @@ class StockData:
 
 	#def get_week_hlc(self)
 
-	def get_month_hlc(self,filedata):
+	def get_month_hlc(self,filedata, number = 0):
 		if filedata is not None:
-			return filedata.get('Month')		
-		data = self.file.read_from_file('Monthly',2,3)
+			return filedata.get('Month')
+		diff = 2+number 		
+		data = self.file.read_from_file('Monthly',diff,diff+1)
 		return self.get_hlc(data)
 
 	def get_quarter_hlc(self,mode,filedata,number = 0):
@@ -196,13 +196,25 @@ class StockData:
 		elif period is 'Today':
 			return self.get_today_hlc()['Open']
 
+	def get_multiple_months(self, filedata = None):
+		month_diff = [0,1,2]
+		month_list = []
+		if filedata is not None:
+			mylist =['Month', 'Month 1', 'Month 2']
+			for months in mylist:
+				month_list.append(filedata.get(months))
+			if len(month_list) == 3:
+				return month_list 
+		for months in month_diff:
+			month_list.append(self.get_month_hlc(None,months))
+		return month_list
+	
 	def get_multiple_quarters(self, filedata = None):
 		quarter_diff = [0,3,6]
 		quarter_list = []
 		if filedata is not None:
 			mylist =['Quarter', 'Quarter 1', 'Quarter 2']
 			for months in mylist:
-				print filedata.get(months) ,'multiple_quarters'
 				quarter_list.append(filedata.get(months))
 			if len(quarter_list) == 3:
 				return quarter_list 
@@ -307,6 +319,8 @@ class StockData:
 			close = self.get_previous_close()
 		count =0
 		#print data,'yayayaya', len(data)
+		if len(data) == 0:
+			return None
 		for line in range(0,len(data)):
 			arr = data[line].split(',')
 			if count is 0:
@@ -335,6 +349,7 @@ class StockData:
 				response = urllib2.urlopen(symbol_url)
 				html = response.read()
 			except:
+				print "heeeeeeeeee",self.stock
 				raise ValueError("No Data") 
 		return html
 
@@ -380,6 +395,8 @@ class StockData:
 	def save_hlc(self, pivot):
 		data = {
 				"Month" : pivot.month_hlc,
+				"Month 1" : pivot.multiple_months_hlc[1],
+				"Month 2" : pivot.multiple_months_hlc[2],
 				"Quarter" : pivot.quarter_hlc,
 				"Quarter 1":pivot.multiple_quarters_hlc[1],
 				"Quarter 2":pivot.multiple_quarters_hlc[2],

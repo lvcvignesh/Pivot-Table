@@ -5,6 +5,9 @@
     <div class="navbar-header">
       <a class="navbar-brand" href="/">StockPicker</a>
     </div>
+    <ul class="nav navbar-nav">
+      <li><a data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-stats"></span> Calculator</a></li>
+    </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="/update"><span class="glyphicon glyphicon-refresh"></span> Update</a></li>
       <li class="dropdown" id="Index"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Index<span class="caret"></span></a>
@@ -75,5 +78,179 @@
     </ul>
   </div>
 </nav>  
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title text-center" id="myModalLabel">Pivot Calculator</h4>
+      </div>
+      <div class="modal-body">
+
+          <div id="modalBodyResponse" style="display:none">
+            <div class="container">
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Pivot</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="pivotval"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Resistance 1</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="r1val"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Resistance 2</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="r2val"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Resistance 3</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="r3val"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Support 1</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="s1val"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Support 2</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="s2val"></h4>
+                  </div>
+                </div>
+              </div>
+              <div class ="row">
+                <div class ="col-md-2 text-right">
+                  <h4>Support 3</h4>
+                </div>
+                <div class ="row col-md-1">
+                  <div class="col-md-6 text-left">
+                    <h4>:</h4>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <h4 id="s3val"></h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div id="modalBodyContent">
+<form class="form-horizontal" id="myform">
+    <div class="form-group">
+        <label for="highValue" class="control-label col-xs-2">High</label>
+        <div class="col-xs-10">
+            <input type="text" class="form-control" id="high" placeholder="High">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="lowValue" class="control-label col-xs-2">Low</label>
+        <div class="col-xs-10">
+            <input type="text" class="form-control" id="low" placeholder="Low">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="closeValue" class="control-label col-xs-2">Close</label>
+        <div class="col-xs-10">
+            <input type="text" class="form-control" id="close" placeholder="Close">
+        </div>
+    </div> 
+</form>
+<script>
+      function myFunction() {
+        if($("#modalBodyResponse").is(":visible")){
+          $("#modalBodyResponse").hide();
+          $("#modalBodyContent").show();
+          $("#calculateButton").html('Calculate');
+        }
+        else{
+        var high = parseFloat(document.getElementById("high").value);
+        var low = parseFloat(document.getElementById("low").value);
+        var close = parseFloat(document.getElementById("low").value);
+        var p = (high + close + low)/3.0;
+        var s1 = (p * 2) - high;
+        var s2 = p  -  (high - low);
+        var r1 = (p * 2) - low;
+        var r2 = p + (high - low);
+        var s3= p - (r2 - s2);
+        var r3 = (p - s2) + r2;
+        
+        $("#modalBodyContent").hide();
+        $("#modalBodyResponse").show();
+        $("#calculateButton").html('Change Values');
+        document.getElementById("pivotval").innerHTML = p;
+        document.getElementById("r1val").innerHTML = r1;
+        document.getElementById("r2val").innerHTML = r2;
+        document.getElementById("r3val").innerHTML = r3;
+        document.getElementById("s1val").innerHTML = s1;
+        document.getElementById("s2val").innerHTML = s2;
+        document.getElementById("s3val").innerHTML = s3;
+        }
+      }
+      $('#myModal').on('hidden.bs.modal', function () {
+      $("#modalBodyResponse").hide();
+      $("#modalBodyContent").show();
+      $("#calculateButton").html('Calculate');
+      document.getElementById("myform").reset();
+})
+    </script>
+  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onClick="myFunction()" id="calculateButton" class="btn btn-primary">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
 {% block table %}{% endblock %}
+</div>
 {% endblock %} 

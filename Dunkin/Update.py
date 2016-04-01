@@ -149,21 +149,28 @@ class UpdateData:
 		month_update = datetime.strptime(month_update[0],'%d-%m-%Y').date()
 		flagday = False
 		flagmonth =False
+		count = 0
 		for ind in NIFTYLIST:
 			self.index = ind
-			if self.date.day - day_update.day > 0:
-				if self.date.weekday() < 5:
-					self.update_index()
-					flagday =True
+			index = NIFTYLIST[ind]
+			if self.date.day - day_update.day > 0 or self.date.month - day_update.month > 0:
+				self.update_index()
+				flagday =True
 			if self.date.month - month_update.month > 0:
 				if self.check_month_change(month_update.month):
-					self.update_monthly()
-					shutil.rmtree(BASE_PATH+SEPERATOR+self.index+SEPERATOR+'HLC')
+					self.update_monthly()	
+					shutil.rmtree(BASE_PATH+SEPERATOR+index+SEPERATOR+'HLC')
 			  		flagmonth =True
 			if flagday:
 				self.write_update('day')
+				if count ==1:
+					return True
 			if flagmonth:
-				self.write_update('month')		
+				self.write_update('month')
+				if count ==1:
+					return True
+			count = count + 1
+		return False	
 
 	def check_month_change(self,udate):
 		data = StockData('INFY',self)

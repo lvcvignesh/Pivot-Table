@@ -12,6 +12,8 @@ MIS_SECTOR = {
     'MEDIA ':'MEDIA & ENTERTAINMENT'
     }
 
+stock50 = main()
+stock500 = main()
 @app.route('/')
 @app.route('/CNX50')
 def nifty50():
@@ -19,7 +21,7 @@ def nifty50():
     """form = LoginForm()
     if form.validate_on_submit():
          form.myfield.data,"yayayayayayay"""
-    stock = main()
+    #stock = main()
     sector = request.args.get('sector', 'all')
     facevalue = request.args.get('facevalue', 'all')
     param = {
@@ -28,14 +30,19 @@ def nifty50():
     }
     if MIS_SECTOR.get(sector,None) is not None:
       param['Sector']= MIS_SECTOR.get(sector,"all")    
-    data = stock.start_func('ind_niftylist.csv',param)
+    
+    if not stock50.stocklist:
+      data = stock50.start_func('ind_niftylist.csv',param)
+    else:
+      print "here"
+      data = stock50.get_stock_list(param)
     """data['INFY'].get_multiple_quarters()
     data['INFY'].get_multiple_half_years()
     data['INFY'].get_multiple_years()
     data['INFY'].get_multiple_five_years()
     data['INFY'].get_multiple_ten_years()
     """
-    sectors = stock.get_index_sectors()   
+    sectors = stock50.get_index_sectors()   
     return render_template("table.html",
                            index ='CNX50',
                            stocks = data,
@@ -47,7 +54,6 @@ def nifty50():
 
 @app.route('/CNX500')
 def nifty500():
-    stock = main()
     sector = 'all'
     facevalue='all'
     sector = request.args.get('sector', 'all')
@@ -58,8 +64,12 @@ def nifty500():
     }
     if MIS_SECTOR.get(sector,None) is not None:
       param['Sector']= MIS_SECTOR.get(sector,"all")    
-    data = stock.start_func('ind_nifty500list.csv',param)
-    sectors = stock.get_index_sectors()   
+    if not stock500.stocklist:
+      data = stock500.start_func('ind_nifty500list.csv',param)
+    else:
+      print "here"
+      data = stock500.get_stock_list(param)
+    sectors = stock500.get_index_sectors()   
     return render_template("table.html",
                            index='CNX500',
                            stocks = data,
@@ -73,6 +83,8 @@ def nifty500():
 def update():
   for ind in indexes:
     data = UpdateData('ind_niftylist.csv')
-    data.update()
+    if data.update():
+      stock50.stocklist = {}
+      stock500.stocklist ={}
   return redirect("/CNX50",)
 
